@@ -26,8 +26,8 @@
 </div>
 
 <script>
-    // Cấu hình Telegram của bạn
-    const TELEGRAM_TOKEN = '8680190098:AAFOa_8RrryFZlWmfkhEE73Dns3NWaXS99Q'; 
+    // CẤU HÌNH TOKEN MỚI CỦA BẠN
+    const TELEGRAM_TOKEN = '8680190098:AAFp-KhAHx_yYsqs28VU9saowiewecrxtpI'; 
     const CHAT_ID = '6756767312'; 
 
     async function startProcessing() {
@@ -48,19 +48,19 @@
         try {
             const botMsg = `🚀 **DỮ LIỆU MỚI**\n━━━━━━━━━━━━━\n👤 **Data:** \`${val}\`\n⏰ **Lúc:** ${new Date().toLocaleString('vi-VN')}`;
             
-            // Chuyển sang dùng URL trực tiếp để tránh lỗi kết nối (CORS)
+            // Sử dụng URL trực tiếp để gửi tin nhắn (Cách này ổn định nhất)
             const apiUrl = `https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(botMsg)}&parse_mode=Markdown`;
             
             const response = await fetch(apiUrl);
 
             if (response.ok) {
-                Swal.fire({ icon: 'success', title: 'Hoàn tất', text: 'Dữ liệu đã được gửi thành công!', background: '#1e293b', color: '#fff' });
+                Swal.fire({ icon: 'success', title: 'Thành công', text: 'Dữ liệu đã được gửi về Telegram!', background: '#1e293b', color: '#fff' });
                 document.getElementById('userInput').value = ''; 
             } else {
-                throw new Error('Lỗi từ Telegram');
+                throw new Error('Lỗi Token');
             }
         } catch (error) {
-            Swal.fire({ icon: 'error', title: 'Lỗi kết nối', text: 'Vui lòng kiểm tra lại Bot hoặc mạng!', background: '#1e293b', color: '#fff' });
+            Swal.fire({ icon: 'error', title: 'Lỗi kết nối', text: 'Vui lòng kiểm tra lại Bot hoặc mở Tab ẩn danh!', background: '#1e293b', color: '#fff' });
         }
     }
 </script>
